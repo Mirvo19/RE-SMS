@@ -22,10 +22,18 @@ if not key:
     print("WARNING: SUPABASE_KEY/SUPABASE_ANON_KEY not found or empty (supabase_db.py)")
 else:
     print(f"Supabase Client init using key starting with: {key[:10]}... (Length: {len(key)})")
+    
     # Diagnostic: Check if key looks like a JWT (starts with 'ey')
     if not key.startswith("ey"):
         print(f"CRITICAL WARNING: The Supabase Key does NOT start with 'ey'.")
         print("Did you paste the 'JWT Secret' instead of the 'anon'/'service_role' key?")
+    elif key.count('.') != 2:
+        print(f"CRITICAL WARNING: The Supabase Key seems malformed.")
+        print(f"It contains {key.count('.')} dots ('.') instead of 2. A valid JWT must have 3 parts separated by dots.")
+        print("Your key is likely TRUNCATED (cut off). Please copy the full key again.")
+    elif len(key) < 150:
+        print(f"WARNING: The Supabase Key length ({len(key)}) seems suspiciously short for a JWT.")
+        print("Please double check that you copied the ENTIRE key.")
         print("Or maybe check for accidentally pasted variables?")
     else:
         print(f"Supabase Client init using key starting with: {key[:5]}...")
