@@ -39,6 +39,7 @@ def login():
                 response = supabase.table('users').select('*').eq('username', identity).execute()
                 data = response.data
         except Exception as e:
+            print(f"LOGIN ERROR: {str(e)}")
             flash(f"System Error: Cannot connect to authentication service. ({str(e)})", 'danger')
             return render_template('auth/login.html', form=form)
 

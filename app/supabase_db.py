@@ -11,12 +11,20 @@ key: str = key_raw.strip().strip("'").strip('"') if key_raw else None
 
 if not url:
     print("WARNING: SUPABASE_URL not found or empty (supabase_db.py)")
+else:
+    # Log valid URL format for debugging
+    print(f"Supabase Client init using URL: {url} (Length: {len(url)})")
+    if "postgres://" in url or "postgresql://" in url:
+        print("CRITICAL ERROR: SUPABASE_URL looks like a database connection string, not an API URL!")
+        print("Please use the 'Project URL' from Supabase Settings -> API (e.g., https://xyz.supabase.co)")
+
 if not key:
     print("WARNING: SUPABASE_KEY/SUPABASE_ANON_KEY not found or empty (supabase_db.py)")
 else:
+    print(f"Supabase Client init using key starting with: {key[:10]}... (Length: {len(key)})")
     # Diagnostic: Check if key looks like a JWT (starts with 'ey')
     if not key.startswith("ey"):
-        print(f"CRITICAL WARNING: The Supabase Key does NOT start with 'ey'. usage_key='{key[:5]}...'")
+        print(f"CRITICAL WARNING: The Supabase Key does NOT start with 'ey'.")
         print("Did you paste the 'JWT Secret' instead of the 'anon'/'service_role' key?")
         print("Or maybe check for accidentally pasted variables?")
     else:
