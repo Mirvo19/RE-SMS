@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Create Subject - {{ get_school_name() }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-4 mb-4 border-bottom">
+    <h1 class="h2">Create New Subject</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{{ url_for('subjects.index') }}" class="btn btn-light text-secondary d-flex align-items-center">
+            <i class="fas fa-arrow-left me-2"></i> Back to List
+        </a>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card border-0 shadow-lg">
+            <div class="card-header bg-white border-bottom py-3">
+                <h5 class="mb-0 text-primary"><i class="fas fa-book me-2"></i> Subject Details</h5>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST" action="">
+                    {{ form.hidden_tag() }}
+
+                    <div class="mb-3">
+                        <label for="name" class="form-label fw-bold">{{ form.name.label }}</label>
+                        {{ form.name(class="form-control" + (" is-invalid" if form.name.errors else "")) }}
+                        {% for error in form.name.errors %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="my_class_id" class="form-label fw-bold">{{ form.my_class_id.label }}</label>
+                        {{ form.my_class_id(class="form-select" + (" is-invalid" if form.my_class_id.errors else "")) }}
+                        {% for error in form.my_class_id.errors %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="teacher_id" class="form-label fw-bold">{{ form.teacher_id.label }}</label>
+                        {{ form.teacher_id(class="form-select" + (" is-invalid" if form.teacher_id.errors else "")) }}
+                        {% for error in form.teacher_id.errors %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                        <div class="form-text">Optional: Assign a teacher to this subject now.</div>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        {{ form.submit(class="btn btn-primary btn-lg shadow-sm") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
