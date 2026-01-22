@@ -5,6 +5,7 @@ from flask import Blueprint, render_template, redirect, url_for, flash, request,
 from flask_login import login_required, current_user
 # from app.models import User, StudentRecord, MyClass, Section, Promotion, BloodGroup, State, Lga, Nationality, db
 from app.supabase_db import get_db, SupabaseModel
+from datetime import datetime
 from werkzeug.security import generate_password_hash
 from app.forms.student_forms import StudentForm, PromotionForm
 from app.utils.helpers import admin_required, teacher_or_admin_required
@@ -217,6 +218,14 @@ def edit(id):
     student_data = res.data[0]
     student_record = SupabaseModel(student_data)
     user_data = student_data['user'] # Nested dict
+    
+    # FIX: WTForms DateField requires a date object, not a string
+    if user_data.get('dob'):
+        try:
+             dob_str = str(user_data['dob']).split('T')[0]
+             user_data['dob'] = datetime.strptime(dob_str, '%Y-%m-%d').date()
+        except: pass
+
     user = SupabaseModel(user_data)
     
     form = StudentForm(obj=user)
