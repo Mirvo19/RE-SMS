@@ -28,8 +28,12 @@ def index():
     # Fetch students with user info. Supabase join syntax:
     # student_records (*, user:user_id (*), my_class:my_class_id (*), section:section_id (*))
     
+    # FIX: Ambiguous FK relationship between student_records and users.
+    # Specify the relationship explicitly using the FK constraint name or column name if supported by postgrest-py
+    # Using specific resource embedding syntax: resource!fk_name(*)
+    
     res = supabase.table('student_records').select(
-        '*, user:users(*), my_class:my_classes(*), section:sections(*)', count='exact'
+        '*, user:users!student_records_user_id_fkey(*), my_class:my_classes(*), section:sections(*)', count='exact'
     ).eq('grad', False).eq('wd', False).range(start, end).execute()
     
     total_count = res.count
@@ -81,7 +85,7 @@ def list_by_class(class_id):
     
     # Get Students
     res = supabase.table('student_records').select(
-         '*, user:users(*), my_class:my_classes(*), section:sections(*)'
+         '*, user:users!student_records_user_id_fkey(*), my_class:my_classes(*), section:sections(*)'
     ).eq('my_class_id', class_id).eq('grad', False).eq('wd', False).execute()
     
     students = SupabaseModel.from_list(res.data)
@@ -172,8 +176,9 @@ def show(id):
     supabase = get_db()
     
     # Get Student Record with User and Parent
+    # Fix ambiguous relationship here as well
     res = supabase.table('student_records').select(
-        '*, user:users(*), my_class:my_classes(*), section:sections(*)'
+        '*, user:users!student_records_user_id_fkey(*), my_class:my_classes(*), section:sections(*)'
     ).eq('id', id).execute()
     
     if not res.data:
@@ -212,8 +217,8 @@ def edit(id):
     """Edit student"""
     supabase = get_db()
     
-    # Fetch existing
-    res = supabase.table('student_records').select('*, user:users(*)').eq('id', id).execute()
+    # Fetch existing - Fix ambiguous relationship
+    res = supabase.table('student_records').select('*, user:users!student_records_user_id_fkey(*)').eq('id', id).execute()
     if not res.data: abort(404)
     student_data = res.data[0]
     student_record = SupabaseModel(student_data)
