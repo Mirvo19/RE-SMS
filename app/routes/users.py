@@ -118,7 +118,25 @@ def show(id):
         flash('User not found', 'danger')
         return redirect(url_for('users.index'))
         
+    if not res.data:
+        flash('User not found', 'danger')
+        return redirect(url_for('users.index'))
+        
     user = SupabaseModel(res.data[0])
+    
+    # Fix date formatting for show view
+    if user.created_at and isinstance(user.created_at, str):
+        try:
+             user.created_at = datetime.fromisoformat(user.created_at.replace('Z', '+00:00'))
+        except: pass
+
+    if user.dob and isinstance(user.dob, str):
+        try:
+             # Handle simple date string "YYYY-MM-DD" or full ISO timestamp
+             dob_str = str(user.dob).split('T')[0]
+             user.dob = datetime.strptime(dob_str, '%Y-%m-%d')
+        except: pass
+        
     return render_template('users/show.html', user=user)
 
 
